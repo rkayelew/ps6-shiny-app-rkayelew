@@ -40,14 +40,20 @@ server <- function(input, output) {
       theme(axis.text.x=element_blank(),
             axis.ticks.x=element_blank())
   })
-  max_year <- reactive({
+  best_album <- reactive({
     df %>% 
       filter(Year == input$Year) %>% 
       filter(Position == min(Position)) %>% 
       select(`Album Name`)
   })
+  album_rank <- reactive({
+    df %>% 
+      filter(Year == input$Year) %>% 
+      filter(Position == min(Position)) %>% 
+      select(Position)
+  })
   output$page_one_text <- renderText({
-      paste("The best album from the year,",input$Year,"is",max_year(),".")
+      paste("The best album from the year",input$Year,"is",best_album(),". This album is ranked ",album_rank(),"out of 500.")
   })
   output$table <- renderTable({
     df %>% 
