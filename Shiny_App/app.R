@@ -12,7 +12,8 @@ ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time"
                            choices = sort(df$Year), selected = "1955")
              ),
              mainPanel(
-               plotlyOutput(outputId = "plot")
+               plotlyOutput(outputId = "plot"),
+               textOutput("page_one_text")
              )
            )
   ),    
@@ -35,9 +36,18 @@ server <- function(input, output) {
       filter(Year == input$Year) %>%
       ggplot(aes(`Album Name`, Position, fill = `Album Name`, width = 0.5)) +
       geom_bar(stat = "identity") +
-      labs(title=paste("Albums represented from the year,", input$Year)) +
+      labs(title=paste("Albums represented from the year,",input$Year)) +
       theme(axis.text.x=element_blank(),
             axis.ticks.x=element_blank())
+  })
+  max_year <- reactive({
+    df %>% 
+      filter(Year == input$Year) %>% 
+      filter(Position == min(Position)) %>% 
+      select(`Album Name`)
+  })
+  output$page_one_text <- renderText({
+      paste("The best album from the year,",input$Year,"is",max_year(),".")
   })
   output$table <- renderTable({
     df %>% 
