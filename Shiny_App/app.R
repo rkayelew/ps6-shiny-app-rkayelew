@@ -4,25 +4,19 @@ library(plotly)
 
 df <- read_delim("top_500.csv")
 
-# Define UI for application that draws a histogram
-ui <- navbarPage("Analyzing the Rolling Stones Top 500 Albums",
-  # Application title
-  tabPanel("Top 10 Countries by Population",
+ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time",
+  tabPanel("Best Albums by Year: Plot",
            sidebarLayout(
-             
-             # Sidebar panel for inputs
              sidebarPanel(
                selectInput("Year", "Select Year", 
                            choices = sort(df$Year), selected = "1955")
              ),
-             
-             # Main panel for displaying outputs
              mainPanel(
                plotlyOutput(outputId = "plot")
              )
            )
   ),    
-  tabPanel("Top 10 Countries by Population",
+  tabPanel("Best Albums by Label: Table",
            sidebarLayout(
              sidebarPanel(
                radioButtons("Label", "Select Label",
@@ -35,23 +29,22 @@ ui <- navbarPage("Analyzing the Rolling Stones Top 500 Albums",
   )
 )
 
-# Define server logic required to draw a histogram
 server <- function(input, output) {
   output$plot <- renderPlotly({
     df %>% 
       filter(Year == input$Year) %>%
-      ggplot(aes(`Album Name`, Position, fill = Artist, width = 0.5)) +
+      ggplot(aes(`Album Name`, Position, fill = `Album Name`, width = 0.5)) +
       geom_bar(stat = "identity") +
+      labs(title=paste("Albums represented from the year,", input$Year)) +
       theme(axis.text.x=element_blank(),
             axis.ticks.x=element_blank())
   })
   output$table <- renderTable({
     df %>% 
       filter(Label == input$Label) %>% 
-      select(Year, Artist, `Album Name`, Position, Critic) %>% 
+      select(Artist, `Album Name`, Position, Critic) %>% 
       arrange(Position)
   })
 }
 
-# Run the application 
 shinyApp(ui = ui, server = server)
