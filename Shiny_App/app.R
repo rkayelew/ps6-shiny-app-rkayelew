@@ -8,12 +8,11 @@ ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time"
   tabPanel("About",
           sidebarLayout(
             sidebarPanel(
-              p("This Shiny webpage provides an interactive display of the",
-              strong(a("Rolling Stone's 500 Greatest Albums of All Time",
-              href= "https://www.rollingstone.com/music/music-lists/best-albums-of-all-time-1062063/")),
-              "from the years 1955-2019."),
-              p("My chosen data frame provides information about the", em("artist, album name, label, critic, position, and year"),
-              "for each respective album."), p("Users can interact with the data to find the highest rated albums by year, and by record label."),
+              p("This Shiny app provides an interactive display of the", em(a("Rolling Stone's 500 Greatest Albums of All Time",
+              href= "https://www.rollingstone.com/music/music-lists/best-albums-of-all-time-1062063/")), "from the years 1955-2019."),
+              p("My chosen data frame, which I accessed from", strong("Kaggle"), "provides information about the", 
+              em("position, artist, album name, label, year, and critic"),"for each respective album."),
+              p("Users can observe the highest rated albums by year, displayed as a bar graph, and by record label, displayed as a table."),
               img(src = "https://media2.fdncms.com/inlander/imager/u/original/20373104/rollingstonetop10.jpg", width = "400px", height = "250px"),              
             ),
             mainPanel(
@@ -37,11 +36,11 @@ ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time"
              )
            )
   ),    
-  tabPanel("Best Albums by Label: Table",
+  tabPanel("Best Albums by Record Label: Table",
            sidebarLayout(
              sidebarPanel(
                radioButtons("Label", "Select Label",
-                                  choices = unique(df$Label))
+                            choices = unique(df$Label))
              ),
              mainPanel(
                textOutput("page_two_text_pt1"),
