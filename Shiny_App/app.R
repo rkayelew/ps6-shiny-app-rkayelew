@@ -61,8 +61,9 @@ server <- function(input, output) {
       filter(Year == input$Year) %>%
       ggplot(aes(`Album Name`, Position, fill = Artist)) +
       geom_bar(color = input$Border_Color, width = 0.5, stat = "identity") +
-      labs(title=paste0("Albums represented from the year, ",input$Year)) +
-      theme(axis.text.x=element_blank(),
+      labs(y = "Rank", title=paste0("Albums represented from the year, ",input$Year)) +
+      theme(axis.title.x=element_blank(),
+            axis.text.x=element_blank(),
             axis.ticks.x=element_blank())
   })
   best_album <- reactive({
@@ -77,33 +78,38 @@ server <- function(input, output) {
       filter(Position == min(Position)) %>% 
       select(Position)
   })
+  
   artist_name <- reactive({
     df %>% 
       filter(Year == input$Year) %>% 
       filter(Position == min(Position)) %>% 
       select(Artist)
   })
+  
   output$page_one_text <- renderText({
       paste0("The highest rated album from the year ",input$Year," is ",best_album()," by ",artist_name(),
             ". This album is ranked ",album_rank()," out of 500.")
   })
+  
   output$table <- renderTable({
     df %>% 
       filter(Label == input$Label) %>% 
       select(Year, Artist, `Album Name`, Position, Critic) %>% 
       arrange(Position)
   }, digits = 0)
+  
   average_ranking <- reactive({
     df %>% 
       filter(Label == input$Label) %>% 
       mutate(average = round(mean(Position), 2)) %>% 
       distinct(average) %>% 
       select(average)
-
   })
+  
   output$page_two_text_pt1 <- renderText({
     paste0(input$Label," has an average ranking of ",average_ranking(),".")
   })
+  
   output$page_two_text_pt2 <- renderText({
     if(average_ranking() > 100) {
       paste0("This label is not very impressive.")
