@@ -2,8 +2,7 @@
 
 ### Description of the data
 This data is accessed from the **Kaggle** online database, and the data itself is gathered from Rolling Stone's 500 Greatest Albums of All Time.
-As the name of the lsit suggests, there are 500 rows, one for each album represented on the list. This dataset has six variables, or columns, those
-being, *Artist, Album Name, Label, Critic, Position, and Year.* Position and Year are of type double and the other variables are of type char. This dataset was relatively simple to manipulate which made plotting and analyzing more straight forward. 
+As the name of the lsit suggests, there are 500 rows, one for each album represented on the list. This dataset has six variables, or columns, those being, *Artist, Album Name, Label, Critic, Position, and Year.* Position and Year are of type double and the other variables are of type char. This dataset was relatively simple to manipulate which made plotting and analyzing more straight forward. I used the packages shiny, tidyverse, plotly, and shinythemes to help produce my Shiny app. 
 
 ### Widgets and Panels
 

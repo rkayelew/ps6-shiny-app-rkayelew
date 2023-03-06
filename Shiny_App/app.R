@@ -1,6 +1,7 @@
 library(shiny)
 library(tidyverse)
 library(plotly)
+library(shinythemes)
 
 df <- read_delim("top_500.csv")
 
@@ -48,7 +49,8 @@ ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time"
                tableOutput("table")
              )
            )
-  )
+  ),
+  theme = shinytheme("united"),
 )
 
 server <- function(input, output) {
