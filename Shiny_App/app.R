@@ -5,11 +5,23 @@ library(plotly)
 df <- read_delim("top_500.csv")
 
 ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time",
+  tabPanel("About",
+          p("This Shiny webpage provides an interactive display of the",
+          a("Rolling Stone's 500 Greatest Albums of All Time",
+          href= "https://www.rollingstone.com/music/music-lists/best-albums-of-all-time-1062063/"),
+          "from the years 1955-2019."),
+          p("My chosen data frame provides information about the", em("artist, album name, label, critic, position, and year"),
+          "for each respective album. Users can interact with the data to find the highest rated albums by year, and by record label."),
+          img(src = "https://media2.fdncms.com/inlander/imager/u/original/20373104/rollingstonetop10.jpg", width = "600px", height = "400px")
+  ),
   tabPanel("Best Albums by Year: Plot",
            sidebarLayout(
              sidebarPanel(
                selectInput("Year", "Select Year", 
-                           choices = sort(df$Year), selected = "1955")
+                           choices = sort(df$Year), selected = "1955"),
+               radioButtons("Color", "Select Color",
+                            choices = c("red", "blue", "black"),
+                            selected = "red")
              ),
              mainPanel(
                plotlyOutput(outputId = "plot"),
@@ -32,10 +44,10 @@ ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time"
 
 server <- function(input, output) {
   output$plot <- renderPlotly({
-    df %>% 
+  df %>% 
       filter(Year == input$Year) %>%
-      ggplot(aes(`Album Name`, Position, fill = `Album Name`, width = 0.5)) +
-      geom_bar(stat = "identity") +
+      ggplot(aes(`Album Name`, Position, fill = Artist)) +
+      geom_bar(color = input$Color, width = 0.5, stat = "identity") +
       labs(title=paste("Albums represented from the year,",input$Year)) +
       theme(axis.text.x=element_blank(),
             axis.ticks.x=element_blank())
