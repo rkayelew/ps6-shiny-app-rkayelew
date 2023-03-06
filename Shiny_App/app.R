@@ -11,7 +11,7 @@ ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time"
           href= "https://www.rollingstone.com/music/music-lists/best-albums-of-all-time-1062063/"),
           "from the years 1955-2019."),
           p("My chosen data frame provides information about the", em("artist, album name, label, critic, position, and year"),
-          "for each respective album. Users can interact with the data to find the highest rated albums by year, and by record label."),
+          "for each respective album."), p("Users can interact with the data to find the highest rated albums by year, and by record label."),
           img(src = "https://media2.fdncms.com/inlander/imager/u/original/20373104/rollingstonetop10.jpg", width = "600px", height = "400px")
   ),
   tabPanel("Best Albums by Year: Plot",
@@ -19,7 +19,7 @@ ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time"
              sidebarPanel(
                selectInput("Year", "Select Year", 
                            choices = sort(df$Year), selected = "1955"),
-               radioButtons("Color", "Select Color",
+               radioButtons("Border_Color", "Select Border_Color",
                             choices = c("red", "blue", "black"),
                             selected = "red")
              ),
@@ -36,6 +36,8 @@ ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time"
                                   choices = unique(df$Label))
              ),
              mainPanel(
+               textOutput("page_two_text_pt1"),
+               textOutput("page_two_text_pt2"),
                tableOutput("table")
              )
            )
@@ -47,8 +49,8 @@ server <- function(input, output) {
   df %>% 
       filter(Year == input$Year) %>%
       ggplot(aes(`Album Name`, Position, fill = Artist)) +
-      geom_bar(color = input$Color, width = 0.5, stat = "identity") +
-      labs(title=paste("Albums represented from the year,",input$Year)) +
+      geom_bar(color = input$Border_Color, width = 0.5, stat = "identity") +
+      labs(title=paste0("Albums represented from the year, ",input$Year)) +
       theme(axis.text.x=element_blank(),
             axis.ticks.x=element_blank())
   })
@@ -64,8 +66,15 @@ server <- function(input, output) {
       filter(Position == min(Position)) %>% 
       select(Position)
   })
+  artist_name <- reactive({
+    df %>% 
+      filter(Year == input$Year) %>% 
+      filter(Position == min(Position)) %>% 
+      select(Artist)
+  })
   output$page_one_text <- renderText({
-      paste("The best album from the year",input$Year,"is",best_album(),". This album is ranked ",album_rank(),"out of 500.")
+      paste0("The highest rated album from the year ",input$Year," is ",best_album()," by ",artist_name(),
+            ". This album is ranked ",album_rank()," out of 500.")
   })
   output$table <- renderTable({
     df %>% 
@@ -73,6 +82,23 @@ server <- function(input, output) {
       select(Artist, `Album Name`, Position, Critic) %>% 
       arrange(Position)
   })
-}
+  average_ranking <- reactive({
+    df %>% 
+      filter(Label == input$Label) %>% 
+      mutate(average = round(mean(Position), 2)) %>% 
+      distinct(average) %>% 
+      select(average)
 
+  })
+  output$page_two_text_pt1 <- renderText({
+    paste0(input$Label," has an average ranking of ",average_ranking(),".")
+  })
+  output$page_two_text_pt2 <- renderText({
+    if(average_ranking() > 100) {
+      paste0("This label is not very impressive.")
+    } else {
+      paste0("This label is known for its incredible releases!")
+    }
+  })
+}
 shinyApp(ui = ui, server = server)
