@@ -10,7 +10,7 @@ ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time"
             sidebarPanel(
               p("This Shiny app provides an interactive display of the", em(a("Rolling Stone's 500 Greatest Albums of All Time",
               href= "https://www.rollingstone.com/music/music-lists/best-albums-of-all-time-1062063/")), "from the years 1955-2019."),
-              p("My chosen data frame, which I accessed from", strong("Kaggle"), "provides information about the", 
+              p("My chosen data frame, which I accessed from", strong("Kaggle"), ", provides information about the", 
               em("position, artist, album name, label, year, and critic"),"for each respective album."),
               p("Users can observe the highest rated albums by year, displayed as a bar graph, and by record label, displayed as a table."),
               img(src = "https://media2.fdncms.com/inlander/imager/u/original/20373104/rollingstonetop10.jpg", width = "400px", height = "250px"),              
@@ -55,7 +55,7 @@ server <- function(input, output) {
   output$figure <- renderTable({
     df %>% 
       sample_n(3)
-  })
+  }, digits = 0)
   output$plot <- renderPlotly({
   df %>% 
       filter(Year == input$Year) %>%
@@ -90,9 +90,9 @@ server <- function(input, output) {
   output$table <- renderTable({
     df %>% 
       filter(Label == input$Label) %>% 
-      select(Artist, `Album Name`, Position, Critic) %>% 
+      select(Year, Artist, `Album Name`, Position, Critic) %>% 
       arrange(Position)
-  })
+  }, digits = 0)
   average_ranking <- reactive({
     df %>% 
       filter(Label == input$Label) %>% 
