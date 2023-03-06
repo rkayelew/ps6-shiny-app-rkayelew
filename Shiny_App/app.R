@@ -6,13 +6,21 @@ df <- read_delim("top_500.csv")
 
 ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time",
   tabPanel("About",
-          p("This Shiny webpage provides an interactive display of the",
-          a("Rolling Stone's 500 Greatest Albums of All Time",
-          href= "https://www.rollingstone.com/music/music-lists/best-albums-of-all-time-1062063/"),
-          "from the years 1955-2019."),
-          p("My chosen data frame provides information about the", em("artist, album name, label, critic, position, and year"),
-          "for each respective album."), p("Users can interact with the data to find the highest rated albums by year, and by record label."),
-          img(src = "https://media2.fdncms.com/inlander/imager/u/original/20373104/rollingstonetop10.jpg", width = "600px", height = "400px")
+          sidebarLayout(
+            sidebarPanel(
+              p("This Shiny webpage provides an interactive display of the",
+              strong(a("Rolling Stone's 500 Greatest Albums of All Time",
+              href= "https://www.rollingstone.com/music/music-lists/best-albums-of-all-time-1062063/")),
+              "from the years 1955-2019."),
+              p("My chosen data frame provides information about the", em("artist, album name, label, critic, position, and year"),
+              "for each respective album."), p("Users can interact with the data to find the highest rated albums by year, and by record label."),
+              img(src = "https://media2.fdncms.com/inlander/imager/u/original/20373104/rollingstonetop10.jpg", width = "400px", height = "250px"),              
+            ),
+            mainPanel(
+              h4("Random Sample of 3 Rows of Data"),
+              tableOutput("figure")
+            )
+          )
   ),
   tabPanel("Best Albums by Year: Plot",
            sidebarLayout(
@@ -45,6 +53,10 @@ ui <- navbarPage("Analyzing the Rolling Stone's 500 Greatest Albums of All Time"
 )
 
 server <- function(input, output) {
+  output$figure <- renderTable({
+    df %>% 
+      sample_n(3)
+  })
   output$plot <- renderPlotly({
   df %>% 
       filter(Year == input$Year) %>%
@@ -97,7 +109,7 @@ server <- function(input, output) {
     if(average_ranking() > 100) {
       paste0("This label is not very impressive.")
     } else {
-      paste0("This label is known for its incredible releases!")
+      paste0("This label is very impressive!")
     }
   })
 }
